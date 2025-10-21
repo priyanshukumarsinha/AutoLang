@@ -21,7 +21,7 @@ private:
 
     Token lexIdentifier();
     Token lexNumber();
-    Token lexBoolLiteral();
+    // Token lexBoolLiteral(); // already taken care in lexidentifier
 
     // utility functions
     bool isAlpha(char c);

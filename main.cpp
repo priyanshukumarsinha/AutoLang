@@ -11,7 +11,7 @@ int main(){
         set rpm 3000;
         set brakePressed true;
         if(brakePressed == true){
-            set speed speed-10.5;
+            set speed (speed+10.5);
         }
     )";
 
@@ -21,9 +21,9 @@ int main(){
     std::cout << "ID\t\t" << "TokenType\t\t" << "Line[Col]\t\t" << "Symbol\t\t" << std::endl;
     int idx = 0;
     while(token.type != TokenType::EOF_TOKEN){
-        std::cout << idx << "\t" 
-                << tokenTypeToString(token.type) << "\t" 
-                << token.line << "[" << token.col << "]\t";
+        std::cout << idx << "\t\t" 
+                << tokenTypeToString(token.type) << "\t\t" 
+                << token.line << "[" << token.col << "]\t\t\t";
 
         // Print literal value if exists
         if (std::holds_alternative<int>(token.value))
@@ -33,7 +33,8 @@ int main(){
         else if (std::holds_alternative<bool>(token.value))
             std::cout << std::boolalpha << std::get<bool>(token.value);
         else
-            std::cout << "-";
+            // if must have a lexeme
+            std::cout << token.lexeme;
 
         std::cout << std::endl;
 

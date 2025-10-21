@@ -8,8 +8,8 @@ Our lexer will recognize and categorize the following tokens:
 | ---------------------------- | --------------------------------------------------- | ------------------------------ |
 | **Keywords**                 | `CONTROL`, `SET`, `IF`                              | `control`, `set`, `if`         |
 | **Types**                    | `TYPE`                                              | `int`, `float`, `bool`         |
-| **Operators**                | `PLUS`, `MINUS`, `GT`, `EQEQ`                       | `+`, `-`, `>`, `==`            |
-| **Delimiters / Punctuation** | `LBRACE`, `RBRACE`, `LPAREN`, `RPAREN`, `SEMICOLON` | `{`, `}`, `(`, `)`, `;`        |
+| **Operators**                | `SYM_PLUS`, `SYM_MINUS`, `GT`, `EQEQ`                       | `+`, `-`, `>`, `==`            |
+| **Delimiters / Punctuation** | `LCURLYBRACE`, `RCURLYBRACE`, `LPAREN`, `RPAREN`, `SEMICOLON` | `{`, `}`, `(`, `)`, `;`        |
 | **Literals**                 | `INT_LITERAL`, `FLOAT_LITERAL`, `BOOL_LITERAL`      | `100`, `45.6`, `true`          |
 | **Identifiers**              | `IDENTIFIER`                                        | `speed`, `engine_temp`, `rpm1` |
 | **Whitespace / Comments**    | —                                                   | ignored                        |
@@ -41,8 +41,8 @@ Below are the **token patterns** we directly use in a lexer implementation.
 ```
 "=="             → EQEQ
 ">"              → GT
-"\+"             → PLUS
-"-"              → MINUS
+"\+"             → SYM_PLUS
+"-"              → SYM_MINUS
 ```
 
 > ⚠️ Order matters — check for `"=="` **before** `"="` or `">"` so multi-character operators are recognized correctly.
@@ -50,8 +50,8 @@ Below are the **token patterns** we directly use in a lexer implementation.
 #### **Delimiters / Punctuation**
 
 ```
-"\{"             → LBRACE
-"\}"             → RBRACE
+"\{"             → LCURLYBRACE
+"\}"             → RCURLYBRACE
 "\("             → LPAREN
 "\)"             → RPAREN
 ";"              → SEMICOLON
@@ -100,7 +100,7 @@ Lexical Output:
 ```
 CONTROL
 IDENTIFIER(speedControl)
-LBRACE
+LCURLYBRACE
 TYPE(float)
 IDENTIFIER(speed)
 SEMICOLON
@@ -114,15 +114,15 @@ IDENTIFIER(speed)
 GT
 FLOAT_LITERAL(60.0)
 RPAREN
-LBRACE
+LCURLYBRACE
 SET
 IDENTIFIER(speed)
 IDENTIFIER(speed)
-MINUS
+SYM_MINUS
 FLOAT_LITERAL(5.0)
 SEMICOLON
-RBRACE
-RBRACE
+RCURLYBRACE
+RCURLYBRACE
 ```
 
 ---
@@ -151,16 +151,16 @@ RBRACE
 | SET           | `set`                  | Assigns value to a variable |
 | IF            | `if`                   | Conditional statement       |
 | TYPE          | `int`, `float`, `bool` | Data type                   |
-| PLUS          | `+`                    | Addition operator           |
-| MINUS         | `-`                    | Subtraction operator        |
+| SYM_PLUS          | `+`                    | Addition operator           |
+| SYM_MINUS         | `-`                    | Subtraction operator        |
 | GT            | `>`                    | Greater than                |
 | EQEQ          | `==`                   | Equality comparison         |
 | IDENTIFIER    | `speed`                | Variable name               |
 | INT_LITERAL   | `100`                  | Integer value               |
 | FLOAT_LITERAL | `45.6`                 | Float value                 |
 | BOOL_LITERAL  | `true` / `false`       | Boolean value               |
-| LBRACE        | `{`                    | Block start                 |
-| RBRACE        | `}`                    | Block end                   |
+| LCURLYBRACE        | `{`                    | Block start                 |
+| RCURLYBRACE        | `}`                    | Block end                   |
 | LPAREN        | `(`                    | Condition start             |
 | RPAREN        | `)`                    | Condition end               |
 | SEMICOLON     | `;`                    | Statement terminator        |

@@ -6,22 +6,22 @@
 
 enum class TokenType{
     // keywords
-    CONTROL, SET, IF,
+    KW_CONTROL, KW_TOKEN_SET, KW_TOKEN_IF,
 
     // Data types
     INT_TYPE, FLOAT_TYPE, BOOL_TYPE,
 
     // OPERATORS
-    PLUS, MINUS, GREATER, EQUAL_EQUAL,
+    SYM_PLUS, SYM_MINUS, SYM_GREATER, EQUAL_EQUAL,
 
     // IDENTIFIERS AND LITERALS
     IDENTIFIER, INT_LITERAL, FLOAT_LITERAL, BOOL_LITERAL,
 
     // SYMBOLS
-    LBRACE, RBRACE, LPARA, RPARA, SEMI,
+    LCURLYBRACE, RCURLYBRACE, LPARABRACE, RPARABRACE, SEMICOLON,
 
     // MISC
-    EOF_TOKEN, UNKNOWN
+    EOF_TOKEN, TOKEN_UNKNOWN
 };
 
 struct Token{
@@ -41,7 +41,7 @@ struct Token{
     std::variant<std::monostate, int, float, bool> value;
 
     Token(){
-        type = TokenType::UNKNOWN;
+        type = TokenType::TOKEN_UNKNOWN;
         lexeme = "";
         line = 0;
         col = 0;
@@ -75,27 +75,27 @@ struct Token{
 
 inline std::string tokenTypeToString(TokenType type) {
     switch (type) {
-        case TokenType::CONTROL: return "CONTROL";
-        case TokenType::SET: return "SET";
-        case TokenType::IF: return "IF";
+        case TokenType::KW_CONTROL: return "KW_CONTROL";
+        case TokenType::KW_TOKEN_SET: return "KW_TOKEN_SET";
+        case TokenType::KW_TOKEN_IF: return "KW_TOKEN_IF";
         case TokenType::INT_TYPE: return "INT_TYPE";
         case TokenType::FLOAT_TYPE: return "FLOAT_TYPE";
         case TokenType::BOOL_TYPE: return "BOOL_TYPE";
-        case TokenType::PLUS: return "PLUS";
-        case TokenType::MINUS: return "MINUS";
-        case TokenType::GREATER: return "GREATER";
+        case TokenType::SYM_PLUS: return "SYM_PLUS";
+        case TokenType::SYM_MINUS: return "SYM_MINUS";
+        case TokenType::SYM_GREATER: return "SYM_GREATER";
         case TokenType::EQUAL_EQUAL: return "EQUAL_EQUAL";
         case TokenType::IDENTIFIER: return "IDENTIFIER";
         case TokenType::INT_LITERAL: return "INT_LITERAL";
         case TokenType::FLOAT_LITERAL: return "FLOAT_LITERAL";
         case TokenType::BOOL_LITERAL: return "BOOL_LITERAL";
-        case TokenType::LBRACE: return "LBRACE";
-        case TokenType::RBRACE: return "RBRACE";
-        case TokenType::LPARA: return "LPARA";
-        case TokenType::RPARA: return "RPARA";
-        case TokenType::SEMI: return "SEMI";
+        case TokenType::LCURLYBRACE: return "LCURLYBRACE";
+        case TokenType::RCURLYBRACE: return "RCURLYBRACE";
+        case TokenType::LPARABRACE: return "LPARABRACE";
+        case TokenType::RPARABRACE: return "RPARABRACE";
+        case TokenType::SEMICOLON: return "SEMICOLON";
         case TokenType::EOF_TOKEN: return "EOF_TOKEN";
-        default: return "UNKNOWN";
+        default: return "TOKEN_UNKNOWN";
     }
 }
 
