@@ -40,6 +40,14 @@ struct Token{
 
     std::variant<std::monostate, int, float, bool> value;
 
+    Token(){
+        type = TokenType::UNKNOWN;
+        lexeme = "";
+        line = 0;
+        col = 0;
+        value = std::monostate{};
+    }
+
     Token(TokenType t, std::string lex, int ln, int c){
         type = t;
         lexeme = lex;

@@ -1,5 +1,5 @@
 #include<bits/stdc++.h>
-#include "lexer.h"
+#include "lexer/lexer.h"
 
 int main(){
     std::string input = R"(
@@ -41,15 +41,12 @@ int main(){
         idx++;
     }
 
-
     // Print errors if any
     const auto& errors = lexer.getErrors();
     if (!errors.empty()) {
         std::cout << "\nLexical Errors:\n";
         for (const auto& e : errors) std::cout << e << "\n";
     }
-
-
 
     return 0;
 }

@@ -1,6 +1,9 @@
 #ifndef LEXER_H
 #define LEXER_H
 #include "token.h"
+#include<string>
+#include<vector>
+#include<unordered_map>
 
 class Lexer{
 private:
@@ -34,4 +37,4 @@ public:
 };
 
 
-#endif LEXER_H
+#endif // LEXER_H
