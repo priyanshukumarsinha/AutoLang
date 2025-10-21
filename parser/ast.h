@@ -1,4 +1,4 @@
-#ifndef AST_H
+ter#ifndef AST_H
 #define AST_H
 
 #include <string>
@@ -27,7 +27,7 @@ struct ProgramNode : ASTNode{
     // Not vector<ControlNodes>
     // we need to store pointer of these 
     // that too unique_ptr, don't know why
-    std::vector<std::unique_ptr<ControlNode>> controlBlocks;
+    std::vector<std::unique_ptr<struct ControlNode>> controlBlocks;
 };
 
 // ControlNode:= "control" IDENTIFIER "{" { statement } "}"
@@ -36,7 +36,7 @@ struct ControlNode : ASTNode{
     std::string name;
     
     // and a vector of all the statements
-    std::vector<std::unique_ptr<StatementNode>> statements;
+    std::vector<std::unique_ptr<struct StatementNode>> statements;
 };
 
 // StatementNode:= VarDeclNode | AssignmentNode | IfNode
@@ -54,20 +54,20 @@ struct VarDeclNode : StatementNode{
 // AssignmentNode := "set" IDENTIFIER expression ";"
 struct AssignmentNode : StatementNode{
     std::string identifier;
-    std::unique_ptr<ExpressionNode> expression;
+    std::unique_ptr<struct ExpressionNode> expression;
 };
 
 // ExpressionNode := TermNode op TermNode
 // can be implemented using a binary tree
 struct ExpressionNode : ASTNode{
-    std::unique_ptr<TermNode> left;
+    std::unique_ptr<struct TermNode> left;
     TokenType op;
-    std::unique_ptr<TermNode> right;
+    std::unique_ptr<struct TermNode> right;
 };
 
 // TermNode:= FactorNode
 struct TermNode : ASTNode{
-    std::unique_ptr<FactorNode> factor;
+    std::unique_ptr<struct FactorNode> factor;
 };
 
 // FactorNode:= IDENTIFIER | literal | "(" expression ")" 
