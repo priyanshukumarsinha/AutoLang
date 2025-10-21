@@ -19,11 +19,36 @@ int main(){
     Lexer lexer(input);
     Token token = lexer.getNextToken();
     std::cout << "ID\t\t" << "TokenType\t\t" << "Line[Col]\t\t" << "Symbol\t\t" << std::endl;
-    int idx =0;
+    int idx = 0;
     while(token.type != TokenType::EOF_TOKEN){
-        std::cout << idx << "\t" << (tokenTypeToString(token.type)) << "\t" << token.line << "[" << token.col << "]\t" << token.lexeme<< std::endl;
+        std::cout << idx << "\t" 
+                << tokenTypeToString(token.type) << "\t" 
+                << token.line << "[" << token.col << "]\t";
+
+        // Print literal value if exists
+        if (std::holds_alternative<int>(token.value))
+            std::cout << std::get<int>(token.value);
+        else if (std::holds_alternative<float>(token.value))
+            std::cout << std::get<float>(token.value);
+        else if (std::holds_alternative<bool>(token.value))
+            std::cout << std::boolalpha << std::get<bool>(token.value);
+        else
+            std::cout << "-";
+
+        std::cout << std::endl;
+
         token = lexer.getNextToken();
+        idx++;
     }
+
+
+    // Print errors if any
+    const auto& errors = lexer.getErrors();
+    if (!errors.empty()) {
+        std::cout << "\nLexical Errors:\n";
+        for (const auto& e : errors) std::cout << e << "\n";
+    }
+
 
 
     return 0;
