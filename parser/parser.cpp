@@ -117,29 +117,55 @@ std::unique_ptr<TermNode> Parser::parseTerm(){
 std::unique_ptr<ExpressionNode> Parser::parseExpression(){
     // first we get left term
     auto leftTerm = parseTerm();
-    
-    // next we get operator : PLUS, MINUS
-    TokenType op = TokenType::TOKEN_UNKNOWN;
-    std::unique_ptr<TermNode> rightTerm;
-
-    if(currentToken.type == TokenType::SYM_PLUS || currentToken.type == TokenType::SYM_MINUS){
-        op = currentToken.type;
-        advance();
-        rightTerm = parseTerm();
+    if(!leftTerm){
+        // recover gracefully: create an empty expression (or return nullptr)
+        raiseError("Expected expression term");
+        return nullptr;
     }
-
-    // if no rightTerm that means its a literal or identifier
-    // which means op = Unknown and rightTerm = nullptr
     auto expr = std::make_unique<ExpressionNode> ();
     expr->left = std::move(leftTerm);
-    if(rightTerm){
-        expr->op = op;
-        expr->right = std::move(rightTerm);
-    }
-    else{
-        expr->op = TokenType::TOKEN_UNKNOWN;
-        expr->right = nullptr;
-    }
+    // next we get operator : PLUS, MINUS
+    TokenType op = TokenType::TOKEN_UNKNOWN;
+    expr->right = nullptr;
+
+    // while we have + or -
+    while(currentToken.type == TokenType::SYM_PLUS || currentToken.type == TokenType::SYM_MINUS){
+        TokenType op = currentToken.type;
+        // int opLine = currentToken.line;
+        // int opCol  = currentToken.col;
+
+        // consume op
+        advance();
+        auto rightTerm = parseTerm();
+
+        // if no rightTerm that means its a literal or identifier
+        // which means op = Unknown and rightTerm = nullptr
+        if(!rightTerm){
+            // syntax error: operator without an operand
+            raiseError("Expected term after '+' or '-'");
+            // best effort: stop parsing expression and return what we have
+            break;
+        }
+
+        // create a new expression node where current expr becomes the left (wrap)
+        auto newExpr = std::make_unique<ExpressionNode>();
+        // left of newExpr is a TermNode that wraps the previous expression
+        // i.e expression processed till now
+        auto wrapperFactor  = std::make_unique<ParenExpressionNode> ();
+        wrapperFactor->expression = std::move(expr);
+
+        auto wrapperTerm = std::make_unique<TermNode> ();
+        wrapperTerm->factor = std::move(wrapperFactor);
+
+        newExpr->left = std::move(wrapperTerm);
+        newExpr->op = op;
+        
+        // now for right part
+        auto rightWrapperTerm = std::move(rightTerm);
+        newExpr->right = std::move(rightWrapperTerm);
+
+        expr = std::move(newExpr);
+    }    
 
     return expr;
 }

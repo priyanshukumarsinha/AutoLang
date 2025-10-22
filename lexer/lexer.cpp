@@ -31,16 +31,16 @@ char Lexer::peek(int k){
 
 char Lexer::advance(){
     if(pos>=input.size()) return '\0';
-    else{
-        if(input[pos] == '\n'){
-            line++;
-            col = 1;
-        }
-        else{
-            col++;
-        }
+    char ch = input[pos++];
+    if(ch == '\n'){
+        line++;
+        col = 1;
     }
-    return input[pos++];
+    else{
+        col++;
+    }
+    
+    return ch;
     // else nowhere to advance, all inputs consumed already
 }
 

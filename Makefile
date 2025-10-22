@@ -4,12 +4,14 @@ PARSER_DIR = parser
 BUILD_DIR = build
 AST_PRINTER_DIR = parser/astPrinter
 SYMBOL_TABLE_PRINTER_DIR = lexer/symbol_table_printer
+TYPE_CHECKER_DIR = typeChecker
 
 SRCS = $(SRC_DIR)/main.cpp \
 	   $(LEXER_DIR)/lexer.cpp \
 	   $(PARSER_DIR)/parser.cpp \
 	   $(AST_PRINTER_DIR)/astPrinter.cpp \
-	   $(SYMBOL_TABLE_PRINTER_DIR)/symbol_table_printer.cpp
+	   $(TYPE_CHECKER_DIR)/typechecker.cpp \
+	   $(SYMBOL_TABLE_PRINTER_DIR)/symbol_table_printer.cpp 
 
 OBJS := $(SRCS:%.cpp=$(BUILD_DIR)/%.o)
 

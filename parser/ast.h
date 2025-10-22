@@ -89,7 +89,7 @@ struct TermNode : ASTNode{
 };
 
 // FactorNode:= IDENTIFIER | literal | "(" expression ")" 
-struct FactorNode {
+struct FactorNode : ASTNode {
     virtual ~FactorNode() = default;
 };
 
@@ -112,11 +112,12 @@ struct ParenExpressionNode : FactorNode {
 struct IfNode : StatementNode{
     std::unique_ptr<ConditionNode> condition;
     std::vector<std::unique_ptr<StatementNode>> statements;
+    int line=0, col=0;
 };
 
 
 // ConditionNode := ExpressionNode comparisionOp ExpressionNode
-struct ConditionNode{
+struct ConditionNode : ASTNode{
     std::unique_ptr<struct ExpressionNode> left;
     TokenType comparisonOp; // GREATER or EQUAL_EQUAL
     std::unique_ptr<struct ExpressionNode> right;
