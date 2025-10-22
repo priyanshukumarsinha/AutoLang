@@ -3,11 +3,13 @@ LEXER_DIR = lexer
 PARSER_DIR = parser
 BUILD_DIR = build
 AST_PRINTER_DIR = parser/astPrinter
+SYMBOL_TABLE_PRINTER_DIR = lexer/symbol_table_printer
 
 SRCS = $(SRC_DIR)/main.cpp \
 	   $(LEXER_DIR)/lexer.cpp \
 	   $(PARSER_DIR)/parser.cpp \
-	   $(AST_PRINTER_DIR)/astPrinter.cpp
+	   $(AST_PRINTER_DIR)/astPrinter.cpp \
+	   $(SYMBOL_TABLE_PRINTER_DIR)/symbol_table_printer.cpp
 
 OBJS := $(SRCS:%.cpp=$(BUILD_DIR)/%.o)
 

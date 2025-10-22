@@ -5,6 +5,8 @@
 #include <string>
 
 #include "parser/astPrinter/astPrinter.h"
+#include "lexer/symbol_table_printer/symbol_table_printer.h"
+
 
 int main(int argc, char*argv[]){
     if(argc!=2){
@@ -22,57 +24,52 @@ int main(int argc, char*argv[]){
     buffer << file.rdbuf(); // read entire file
     std::string input = buffer.str();
 
+    int choice = 0;
+    do {
+        std::cout << "\n==============================\n";
+        std::cout << "        MENU OPTIONS\n";
+        std::cout << "==============================\n";
+        std::cout << "1. Print Tokens (Symbol Table)\n";
+        std::cout << "2. Print AST Tree\n";
+        std::cout << "3. Exit\n";
+        std::cout << "==============================\n";
+        std::cout << "Enter your choice: ";
+        std::cin >> choice;
+        switch (choice) {
+            case 1:
+                try {
+                    printTokens(input);
+                } catch (const std::exception& e) {
+                    std::cerr << "Error: " << e.what() << "\n";
+                }
+                break;
 
-    // Lexer lexer(input);
-    // Token token = lexer.getNextToken();
-    // std::cout << "ID\t\t" << "TokenType\t\t" << "Line[Col]\t\t" << "Symbol\t\t" << std::endl;
-    // int idx = 0;
-    // while(token.type != TokenType::EOF_TOKEN){
-    //     std::cout << idx << "\t\t" 
-    //             << tokenTypeToString(token.type) << "\t\t" 
-    //             << token.line << "[" << token.col << "]\t\t\t";
+            case 2:
+                try {
+                    Lexer lexer(input);
+                    Parser parser(lexer);
+                    auto program = parser.parseProgram();
 
-    //     // Print literal value if exists
-    //     if (std::holds_alternative<int>(token.value))
-    //         std::cout << std::get<int>(token.value);
-    //     else if (std::holds_alternative<float>(token.value))
-    //         std::cout << std::get<float>(token.value);
-    //     else if (std::holds_alternative<bool>(token.value))
-    //         std::cout << std::boolalpha << std::get<bool>(token.value);
-    //     else
-    //         // if must have a lexeme
-    //         std::cout << token.lexeme;
+                    if (!parser.getErrors().empty()) {
+                        std::cout << "Errors:\n";
+                        for (const auto& err : parser.getErrors())
+                            std::cout << err << "\n";
+                    } else {
+                        printProgram(program.get());
+                    }
+                } catch (const std::exception& e) {
+                    std::cerr << "Error: " << e.what() << "\n";
+                }
+                break;
 
-    //     std::cout << std::endl;
+            case 3:
+                std::cout << "Exiting program.\n";
+                break;
 
-    //     token = lexer.getNextToken();
-    //     idx++;
-    // }
-
-    // // Print errors if any
-    // const auto& errors = lexer.getErrors();
-    // if (!errors.empty()) {
-    //     std::cout << "\nLexical Errors:\n";
-    //     for (const auto& e : errors) std::cout << e << "\n";
-    // }
-
-
-   try {
-        Lexer lexer(input);
-        Parser parser(lexer);
-        auto program = parser.parseProgram();
-
-        if (!parser.getErrors().empty()) {
-            std::cout << "Errors:\n";
-            for (const auto& err : parser.getErrors())
-                std::cout << err << "\n";
-        } else {
-            // gets points to the ProgramNode
-            printProgram(program.get());
+            default:
+                std::cout << "Invalid choice. Try again.\n";
         }
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << "\n";
-    }
+    } while (choice != 3);
 
     return 0;
 }
