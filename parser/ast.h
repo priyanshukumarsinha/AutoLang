@@ -1,4 +1,4 @@
-ter#ifndef AST_H
+#ifndef AST_H
 #define AST_H
 
 #include <string>
@@ -15,6 +15,22 @@ ter#ifndef AST_H
 // but we are going to implement Base Node option here
 // This is like S (Start Symbol)
 // S:= ProgramNode
+
+struct ASTNode;
+struct ProgramNode;
+struct ControlNode;
+struct StatementNode;
+struct VarDeclNode;
+struct AssignmentNode;
+struct ExpressionNode;
+struct TermNode;
+struct FactorNode;
+struct IdentifierNode;
+struct LiteralNode;
+struct ParenExpressionNode;
+struct IfNode;
+struct ConditionNode;
+
 struct ASTNode{
     virtual ~ASTNode() = default;
     // somehow it helps in cleanup when deleting derived classes such as declaration, assignment, etc...

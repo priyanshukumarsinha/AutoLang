@@ -156,7 +156,7 @@ Token Lexer::getNextToken(){
             advance();
             if(peek(0) == '='){
                 advance(); 
-                return Token(TokenType::SYM_GREATER, std::string(1,ch), line, col);
+                return Token(TokenType::EQUAL_EQUAL, std::string(1,ch), line, col);
             }
             reportError("Unexpected character: =");
             return Token(TokenType::TOKEN_UNKNOWN, "=", line, col);

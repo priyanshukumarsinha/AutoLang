@@ -2,6 +2,7 @@
 #include <sstream>
 #include "../lexer/lexer.h"
 #include <unordered_set>
+#include <iostream>
 
 Parser::Parser(Lexer &lexer) : lexer(lexer) {
     currentToken = lexer.getNextToken();
@@ -89,7 +90,6 @@ std::unique_ptr<FactorNode> Parser::parseFactor(){
 
         auto node = std::make_unique<ParenExpressionNode> ();
         node->expression = std::move(expr);
-        advance();
         return node;
     }
     else{
@@ -152,17 +152,18 @@ std::unique_ptr<AssignmentNode> Parser::parseAssignment(){
     advance();
     auto expr = parseExpression();
 
+    expect(TokenType::SEMICOLON);
+    
     auto assignment = std::make_unique<AssignmentNode>();
     assignment->expression = std::move(expr);;
     assignment->identifier = name;
-
+    
     return assignment;
 }
 
 std::unique_ptr<ConditionNode> Parser::parseCondition(){
     auto leftExpr = parseExpression();
 
-    TokenType op = TokenType::TOKEN_UNKNOWN;
     std::unique_ptr<ExpressionNode> rightExp;
 
     if (currentToken.type != TokenType::SYM_GREATER && currentToken.type != TokenType::EQUAL_EQUAL) {
@@ -194,10 +195,12 @@ std::unique_ptr<IfNode> Parser::parseIfStatement(){
     auto ifnode = std::make_unique<IfNode>();
     ifnode->condition = std::move(condition);
 
-    while(currentToken.type != TokenType::RCURLYBRACE && currentToken != TokenType::EOF_TOKEN){
+    while(currentToken.type != TokenType::RCURLYBRACE && currentToken.type != TokenType::EOF_TOKEN){
+
         auto stmt = parseStatement();
         ifnode->statements.push_back(std::move(stmt));
     }
+
 
     expect(TokenType::RCURLYBRACE);
 
@@ -207,10 +210,12 @@ std::unique_ptr<IfNode> Parser::parseIfStatement(){
 std::unique_ptr<StatementNode> Parser::parseStatement(){
     // VarDeclNode
     // expecting dataType
+
+    
     if(dataTypes.count(currentToken.type)){
         return parseVarDecl();
     }
-
+    
     // AssignmentNode
     // if "set" parse assignment
     else if(currentToken.type == TokenType::KW_TOKEN_SET){
@@ -229,25 +234,25 @@ std::unique_ptr<StatementNode> Parser::parseStatement(){
 }
 
 std::unique_ptr<ControlNode> Parser::parseControlBlock(){
-
+    
     // expecting "control"
     expect(TokenType::KW_CONTROL);
-
+    
     // next is name (identifier)
     if (currentToken.type != TokenType::IDENTIFIER) {
         raiseError("Expected control block name");
         return nullptr;
     }
-
+    
     // if name is there
     std::string name = currentToken.lexeme;
     advance();
-
+    
     // next we expect "{"
     expect(TokenType::LCURLYBRACE);
-
+    
     // next 
-    auto control = std::unique_ptr<ControlNode>();
+    auto control = std::make_unique<ControlNode>();
 
     control->name = name;
 
@@ -271,7 +276,7 @@ std::unique_ptr<ControlNode> Parser::parseControlBlock(){
 std::unique_ptr<ProgramNode> Parser::parseProgram(){
     auto program = std::make_unique<ProgramNode>();
     // since we have to return a unique_ptr we make it unique
-
+    
     // parse all controlBlocks
     while(currentToken.type == TokenType::KW_CONTROL){
         // parseControlBlock now
@@ -280,7 +285,7 @@ std::unique_ptr<ProgramNode> Parser::parseProgram(){
             program->controlBlocks.push_back(std::move(control));
         }
     }
-
+    
     if(currentToken.type != TokenType::EOF_TOKEN){
         raiseError("Unexpected token at the end of program");
     }
