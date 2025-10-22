@@ -65,12 +65,14 @@ struct StatementNode : ASTNode{
 struct VarDeclNode : StatementNode{
     TokenType type; // INT_TYPE, FLOAT_TYPE, BOOL_TYPE
     std::string identifier;
+    int line = 0, col = 0;
 };
 
 // AssignmentNode := "set" IDENTIFIER expression ";"
 struct AssignmentNode : StatementNode{
     std::string identifier;
     std::unique_ptr<struct ExpressionNode> expression;
+    int line = 0, col = 0; // position of `set` or identifier
 };
 
 // ExpressionNode := TermNode op TermNode
@@ -93,11 +95,13 @@ struct FactorNode {
 
 struct IdentifierNode : FactorNode {
     std::string identifier;
+    int line = 0, col = 0;
 };
 
 struct LiteralNode : FactorNode {
     std::variant<std::monostate, int, float, bool> literalValue;
     TokenType literalType = TokenType::EOF_TOKEN;
+    int line = 0, col = 0;
 };
 
 struct ParenExpressionNode : FactorNode {

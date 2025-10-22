@@ -50,6 +50,8 @@ std::unique_ptr<VarDeclNode> Parser::parseVarDecl(){
         return nullptr;
     }
     std::string name = currentToken.lexeme;
+    int nameLine = currentToken.line;
+    int nameCol = currentToken.col;
     // one last thing to check here is semicolon
     advance();
     expect(TokenType::SEMICOLON);
@@ -58,6 +60,8 @@ std::unique_ptr<VarDeclNode> Parser::parseVarDecl(){
     auto decl = std::make_unique<VarDeclNode> ();
     decl->identifier = name;
     decl->type = type;
+    decl->line = nameLine;
+    decl->line = nameCol;
 
     return decl;
 }
@@ -73,6 +77,8 @@ std::unique_ptr<FactorNode> Parser::parseFactor(){
     if(currentToken.type == TokenType::IDENTIFIER){
         auto node = std::make_unique<IdentifierNode> ();
         node->identifier = currentToken.lexeme;
+        node->col = currentToken.col;
+        node->line = currentToken.line;
         advance();
         return node;
     }
@@ -80,6 +86,8 @@ std::unique_ptr<FactorNode> Parser::parseFactor(){
         auto node = std::make_unique<LiteralNode> ();
         node->literalType = currentToken.type;
         node->literalValue = currentToken.value;
+        node->line = currentToken.line;
+        node->col = currentToken.col;
         advance();
         return node;
     }
@@ -147,6 +155,8 @@ std::unique_ptr<AssignmentNode> Parser::parseAssignment(){
     }
 
     std::string name = currentToken.lexeme;
+    int nameLine = currentToken.line;
+    int nameCol = currentToken.col;
     
     // next we check for expression
     advance();
@@ -157,6 +167,8 @@ std::unique_ptr<AssignmentNode> Parser::parseAssignment(){
     auto assignment = std::make_unique<AssignmentNode>();
     assignment->expression = std::move(expr);;
     assignment->identifier = name;
+    assignment->line = nameLine;
+    assignment->col = nameCol;
     
     return assignment;
 }

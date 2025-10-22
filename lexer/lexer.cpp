@@ -142,24 +142,24 @@ Token Lexer::getNextToken(){
 
     // lastly we need to process all these symbols 
     //  { } ( ) ; == > + -
-
+    int startCol = col;
     switch(ch){
-        case '{': advance(); return Token(TokenType::LCURLYBRACE, std::string(1,ch), line, col);
-        case '}': advance(); return Token(TokenType::RCURLYBRACE, std::string(1,ch), line, col);
+        case '{': advance(); return Token(TokenType::LCURLYBRACE, std::string(1,ch), line, startCol);
+        case '}': advance(); return Token(TokenType::RCURLYBRACE, std::string(1,ch), line, startCol);
         case '(': advance(); return Token(TokenType::LPARABRACE, std::string(1,ch), line, col);
-        case ')': advance(); return Token(TokenType::RPARABRACE, std::string(1,ch), line, col);
-        case ';': advance(); return Token(TokenType::SEMICOLON, std::string(1,ch), line, col);
-        case '>': advance(); return Token(TokenType::SYM_GREATER, std::string(1,ch), line, col);
-        case '+': advance(); return Token(TokenType::SYM_PLUS, std::string(1,ch), line, col);
-        case '-': advance(); return Token(TokenType::SYM_MINUS, std::string(1,ch), line, col);
+        case ')': advance(); return Token(TokenType::RPARABRACE, std::string(1,ch), line, startCol);
+        case ';': advance(); return Token(TokenType::SEMICOLON, std::string(1,ch), line, startCol);
+        case '>': advance(); return Token(TokenType::SYM_GREATER, std::string(1,ch), line, startCol);
+        case '+': advance(); return Token(TokenType::SYM_PLUS, std::string(1,ch), line, startCol);
+        case '-': advance(); return Token(TokenType::SYM_MINUS, std::string(1,ch), line, startCol);
         case '=': 
             advance();
             if(peek(0) == '='){
                 advance(); 
-                return Token(TokenType::EQUAL_EQUAL, std::string(1,ch), line, col);
+                return Token(TokenType::EQUAL_EQUAL, "==", line, startCol);
             }
             reportError("Unexpected character: =");
-            return Token(TokenType::TOKEN_UNKNOWN, "=", line, col);
+            return Token(TokenType::TOKEN_UNKNOWN, "=", line, startCol);
         default: break;
     }
 
