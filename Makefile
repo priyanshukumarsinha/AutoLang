@@ -2,10 +2,12 @@ SRC_DIR = .
 LEXER_DIR = lexer
 PARSER_DIR = parser
 BUILD_DIR = build
+AST_PRINTER_DIR = parser/astPrinter
 
 SRCS = $(SRC_DIR)/main.cpp \
 	   $(LEXER_DIR)/lexer.cpp \
-	   $(PARSER_DIR)/parser.cpp 
+	   $(PARSER_DIR)/parser.cpp \
+	   $(AST_PRINTER_DIR)/astPrinter.cpp
 
 OBJS := $(SRCS:%.cpp=$(BUILD_DIR)/%.o)
 

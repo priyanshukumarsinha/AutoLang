@@ -3,5 +3,8 @@ control speedControl {
     set speed (5-10);
     if (speed > 40.0) {
         set speed (speed - 5.0);
+        if(speed == 40.0){
+            set speed 30;
+        }
     }
 }

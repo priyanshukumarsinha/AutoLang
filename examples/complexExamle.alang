@@ -1,0 +1,29 @@
+control masterControl {
+    float speed;
+    int gear;
+    bool alert;
+
+    set speed (50.0 + 10.0);
+    set gear 3;
+
+    if (speed > 60.0) {
+        set speed (speed - 5.0);
+        set gear (gear + 1);
+        if (gear > 5) {
+            set gear 5;
+            if (speed == 55.0) {
+                set alert true;
+            }
+        }
+    }
+}
+
+control diagnostics {
+    bool systemOK;
+    int errorCode;
+
+    set systemOK true;
+    if (systemOK == true) {
+        set errorCode 0;
+    }
+}
