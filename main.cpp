@@ -2,120 +2,190 @@
 #include "lexer/lexer.h"
 #include "parser/parser.h"
 #include "parser/ast.h"
+#include <string>
 
-void printIndent(int level) {
-    for (int i = 0; i < level; ++i)
-        std::cout << "  ";
+void printExpression(const ExpressionNode * expression, int level);
+
+void printBranch(int level){
+    for(int i=0; i<level; i++){
+        std::cout << "|\t";
+    }
+    std::cout << "|-";
 }
 
-void printExpression(const ExpressionNode* expr, int level);
-void printFactor(const FactorNode* factor, int level);
-void printStatement(const StatementNode* stmt, int level);
+void printIdentifier(const IdentifierNode * ident){
+    std::cout << "identifier : " << ident->identifier << "\n";
+}
 
-// Print Factor
-void printFactor(const FactorNode* factor, int level) {
-    if (auto id = dynamic_cast<const IdentifierNode*>(factor)) {
-        printIndent(level);
-        std::cout << "Identifier: " << id->identifier << "\n";
-    } 
-    else if (auto lit = dynamic_cast<const LiteralNode*>(factor)) {
-        printIndent(level);
-        std::cout << "Literal (Type=" << static_cast<int>(lit->literalType) << "): ";
 
-        if (std::holds_alternative<int>(lit->literalValue))
-            std::cout << std::get<int>(lit->literalValue);
-        else if (std::holds_alternative<float>(lit->literalValue))
-            std::cout << std::get<float>(lit->literalValue);
-        else if (std::holds_alternative<bool>(lit->literalValue))
-            std::cout << (std::get<bool>(lit->literalValue) ? "true" : "false");
+void printFactor(const FactorNode* factor, int level){
+    printBranch(level);
+    std::cout << "factor : ";
+    if(auto ident = dynamic_cast<const IdentifierNode*> (factor)){
+        printIdentifier(ident);
+    }
+    else if(auto literal = dynamic_cast<const LiteralNode*> (factor)){
+        std::cout << "literal : ";
+        std::cout << tokenTypeToString(literal->literalType) << " [";
 
+        // for literalValue (int, float, bool)
+        if (std::holds_alternative<int>(literal->literalValue))
+            std::cout << std::get<int>(literal->literalValue);
+        else if (std::holds_alternative<float>(literal->literalValue))
+            std::cout << std::get<float>(literal->literalValue);
+        else if (std::holds_alternative<bool>(literal->literalValue))
+            std::cout << (std::get<bool>(literal->literalValue) ? "true" : "false");
+
+        std::cout << "]\n";
+    }
+    else{
+        auto paren = dynamic_cast<const ParenExpressionNode*> (factor);
         std::cout << "\n";
-    } 
-    else if (auto paren = dynamic_cast<const ParenExpressionNode*>(factor)) {
-        printIndent(level);
-        std::cout << "ParenExpression:\n";
-        printExpression(paren->expression.get(), level + 1);
+        printExpression(paren->expression.get(), level+1);
     }
 }
 
-// Print Expression
-void printExpression(const ExpressionNode* expr, int level) {
-    if (!expr) return;
 
-    printIndent(level);
-    std::cout << "Expression:\n";
-    printIndent(level + 1);
-    std::cout << "Left:\n";
-    printFactor(expr->left->factor.get(), level + 2);
-
-    if (expr->op != TokenType::TOKEN_UNKNOWN) {
-        printIndent(level + 1);
-        std::cout << "Operator: " << tokenTypeToString(expr->op) << "\n";
-        printIndent(level + 1);
-        std::cout << "Right:\n";
-        printFactor(expr->right->factor.get(), level + 2);
+void printTerm(const TermNode * term, const std::string& msg, int level){
+    for(int i=0; i<level; i++){
+        std::cout << "|\t";
     }
+    std::cout << "|-";
+    std::cout << msg <<"Term\n";
+    printFactor(term->factor.get(), level+1);
 }
 
-// Print Statement
-void printStatement(const StatementNode* stmt, int level) {
-    if (auto decl = dynamic_cast<const VarDeclNode*>(stmt)) {
-        printIndent(level);
-        std::cout << "VarDecl: " << tokenTypeToString(decl->type)
-                  << " " << decl->identifier << "\n";
-    } 
-    else if (auto assign = dynamic_cast<const AssignmentNode*>(stmt)) {
-        printIndent(level);
-        std::cout << "Assignment: set " << assign->identifier << "\n";
-        printExpression(assign->expression.get(), level + 1);
-    } 
-    else if (auto ifNode = dynamic_cast<const IfNode*>(stmt)) {
-        printIndent(level);
-        std::cout << "If Statement:\n";
-
-        printIndent(level + 1);
-        std::cout << "Condition:\n";
-        printExpression(ifNode->condition->left.get(), level + 2);
-        printIndent(level + 2);
-        std::cout << "Comparison Op: " << tokenTypeToString(ifNode->condition->comparisonOp) << "\n";
-        printExpression(ifNode->condition->right.get(), level + 2);
-
-        printIndent(level + 1);
-        std::cout << "Body:\n";
-        for (const auto& s : ifNode->statements)
-            printStatement(s.get(), level + 2);
+void printExpression(const ExpressionNode * expression,int level){
+    // std::cout << "|\t|\t|\n";
+    // std::cout << "|\t|\t|-";
+    for(int i=0; i<level; i++){
+        std::cout << "|\t";
     }
-}
+    std::cout << "|-";
 
-// Print Control Block
-void printControl(const ControlNode* control, int level) {
-    printIndent(level);
-    std::cout << "Control: " << control->name << "\n";
-    for (const auto& stmt : control->statements)
-        printStatement(stmt.get(), level + 1);
-}
+    std::cout << "expression\n";
+    // print left term
+    printTerm(expression->left.get(), "Left", level+1);
 
-// Print Program
-void printProgram(const ProgramNode* program) {
-    std::cout << "Program:\n";
-    for (const auto& control : program->controlBlocks)
-        printControl(control.get(), 1);
-}
-
-int main(){
-    std::string input = R"(
-    control speedControl {
-        float speed;
-        int rpm;
-        bool brakePressed;
-        set speed 80.5;
-        set rpm 3000;
-        set brakePressed true;
-        if(brakePressed == true){
-            set speed (speed+10.5);
+    if(expression->right.get()){
+        for(int i=0; i<level+1; i++){
+            std::cout << "|\t";
         }
+        std::cout << "|-";
+        std::cout << "op : " << tokenTypeToString(expression->op);
+        std::cout << "\n";
+        printTerm(expression->right.get(), "Right", level+1);
     }
-    )";
+
+}
+
+void printCondition(const ConditionNode * condition, int level){
+    // print left term
+    printExpression(condition->left.get(), level);
+    for(int i=0; i<level; i++){
+            std::cout << "|\t";
+        }
+    std::cout << "|-";
+    std::cout << "op : " << tokenTypeToString(condition->comparisonOp);
+    std::cout << "\n";
+
+    printExpression(condition->right.get(), level);
+}
+
+void printStatement(const StatementNode * statement, int level){
+    for(int i=0; i<level; i++){
+        std::cout << "|\t";
+    }
+    std::cout << "|-";
+
+    std::cout << "statement : ";
+    level++;
+    if(auto decl = dynamic_cast<const VarDeclNode*>(statement)){
+        std::cout << "varDeclNode\n";
+
+        for(int i=0; i<level; i++){
+           std::cout << "|\t";
+        }
+        std::cout << "|-";
+
+
+        std::cout << "type : " << tokenTypeToString(decl->type) << "\n";
+        for(int i=0; i<level; i++){
+           std::cout << "|\t";
+        }
+        std::cout << "|-";
+        std::cout << "identifier : " << decl->identifier << "\n";
+
+    }
+    else if(auto assign = dynamic_cast<const AssignmentNode*>(statement)){
+        std::cout << "assignmentNode (set) \n";
+        for(int i=0; i<level; i++){
+           std::cout << "|\t";
+        }
+        std::cout << "|-";
+        std::cout << "identifier : " << assign->identifier << "\n";
+
+        // print expression
+        // std::cout << "expression : " << assign->expression.get() << "\n";
+        printExpression(assign->expression.get(), level);        
+    }
+    else{
+        auto ifNode = dynamic_cast<const IfNode*>(statement);
+        std::cout << "ifNode \n";
+        for(int i=0; i<level; i++){
+           std::cout << "|\t";
+        }
+        std::cout << "|-";
+        // print condition
+        std::cout << "condition\n";
+        printCondition(ifNode->condition.get(), level+1);
+
+        // print statements
+        const auto& statements = ifNode->statements;
+        for(const auto& statement : statements){
+            printStatement(statement.get(), level);
+        }
+        std::cout << "\n"; //temporary
+
+    }
+}
+
+void printControlBlock(const ControlNode * controlBlock, int level){
+    std::cout << "|\n";
+    std::cout << "|- ";
+    std::cout << "controlBlock : " << controlBlock->name << "\n";
+    const auto& statements = controlBlock->statements;
+    for(const auto& statement : statements){
+        printStatement(statement.get(), level+1);
+    }
+}
+
+void printProgram(const ProgramNode * program){
+    std::cout << "Program\n";
+    int level = 0;
+    // printControlBlocks from 
+    // std::vector<std::unique_ptr<struct ControlNode>> controlBlocks;
+    const auto& controlBlocks = program->controlBlocks;
+    for(const auto& controlBlock : controlBlocks){
+        printControlBlock(controlBlock.get(), level);
+    }
+}
+
+int main(int argc, char*argv[]){
+    if(argc!=2){
+        std::cerr << "Usage: " << argv[0] << " <filename>\n";
+        return 1;
+    }
+
+    std::string filename = argv[1];
+    std::ifstream file(filename);
+    if(!file){
+        std::cerr << "ERROR :: FILE NOT FOUND :: " << filename << std::endl;
+        return 1;
+    }
+    std::stringstream buffer;
+    buffer << file.rdbuf(); // read entire file
+    std::string input = buffer.str();
 
 
     // Lexer lexer(input);
@@ -162,6 +232,7 @@ int main(){
             for (const auto& err : parser.getErrors())
                 std::cout << err << "\n";
         } else {
+            // gets points to the ProgramNode
             printProgram(program.get());
         }
     } catch (const std::exception& e) {
