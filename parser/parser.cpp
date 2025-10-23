@@ -126,6 +126,11 @@ std::unique_ptr<ExpressionNode> Parser::parseExpression(){
     }
     auto expr = std::make_unique<ExpressionNode> ();
     expr->left = std::move(leftTerm);
+
+    // line and col for error
+    expr->line = currentToken.line;
+    expr->col = currentToken.col;
+
     // next we get operator : PLUS, MINUS
     TokenType op = TokenType::TOKEN_UNKNOWN;
     expr->right = nullptr;
@@ -133,8 +138,8 @@ std::unique_ptr<ExpressionNode> Parser::parseExpression(){
     // while we have + or -
     while(currentToken.type == TokenType::SYM_PLUS || currentToken.type == TokenType::SYM_MINUS){
         op = currentToken.type;
-        // int opLine = currentToken.line;
-        // int opCol  = currentToken.col;
+        int opLine = currentToken.line;
+        int opCol  = currentToken.col;
 
         // consume op
         advance();
@@ -153,6 +158,10 @@ std::unique_ptr<ExpressionNode> Parser::parseExpression(){
         auto newExpr = std::make_unique<ExpressionNode>();
         // left of newExpr is a TermNode that wraps the previous expression
         // i.e expression processed till now
+
+        // set line and col from operator token
+        newExpr->line = opLine;
+        newExpr->col = opCol;
 
         // This makes it a lot messy 
         // TODO: improve this in the next project

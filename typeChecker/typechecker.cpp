@@ -31,7 +31,44 @@ void TypeChecker::clearSymbolTable(){
 
 // Now its time to implement the inferExpression part
 TypeTag TypeChecker::inferExpression(const ExpressionNode* expression){
-    // 
+    // we check leftTerm then rightTerm the for operators
+    if(!expression) return TypeTag::TYPE_ERROR;
+
+    // left type
+    TypeTag leftT = inferTerm(expression->left.get());
+    
+    // Ex: set cat 1
+    if(!expression->right) return leftT;
+
+    TypeTag rightT = inferTerm(expression->right.get());
+
+    // no side should be an Erro
+    if(leftT == TypeTag::TYPE_ERROR || rightT == TypeTag::TYPE_ERROR){
+        return TypeTag::TYPE_ERROR; // overall error
+        // reportError from where its called
+    }
+
+    // op is either + or -
+    if(expression->op == TokenType::SYM_PLUS || expression->op == TokenType::SYM_MINUS){
+        // but we only allow arithmetic operations on numeric values
+        // i.e int or float
+        if(!isNumeric(leftT) || !isNumeric(rightT)){
+            // if any of them is not numeric
+            // we throw error
+            reportError(expression->line, expression->col, "Operator '+'/'-' requires numeric operands");
+            return TypeTag::TYPE_ERROR;
+        }
+
+        // else all good
+        // widen left and right and send
+        return numericWiden(leftT, rightT);
+    }
+
+    // otherwise we throw error
+    reportError(expression->line, expression->col, "Unexpected operator in expression");
+    return TypeTag::TYPE_ERROR;
+
+
 }
 
 void TypeChecker::checkAssignment(const AssignmentNode* assign){
@@ -71,7 +108,7 @@ void TypeChecker::checkAssignment(const AssignmentNode* assign){
     // in this case assign->expression = nullptr
     if(assign->expression){
         // we will get the exprType from inferExpression()
-        // exprType = inferExpression(assign->expression.get());
+        exprType = inferExpression(assign->expression.get());
     }
     else{
         // reportError
@@ -82,7 +119,8 @@ void TypeChecker::checkAssignment(const AssignmentNode* assign){
     // Now since we have the type of exprType i.e int, float, bool or error
     // we check if its error
     if(exprType == TypeTag::TYPE_ERROR){
-        // error is already pushed in inferExpression, so no repeating needed here
+        // error reported
+        reportError(assign->line, assign->col, "Unknown Type in Assignment");
         return;
     }
 
@@ -117,6 +155,7 @@ void TypeChecker::checkAssignment(const AssignmentNode* assign){
 void TypeChecker::checkIf(const IfNode* ifnode){
     std::cout << "Its ifNode \n";
 }
+
 void TypeChecker::checkVarDecl(const VarDeclNode* decl){
     // while declaring variable
     // we need to check if it has been declared earlier (in symtab)

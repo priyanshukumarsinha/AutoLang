@@ -78,6 +78,7 @@ struct AssignmentNode : StatementNode{
 // ExpressionNode := TermNode op TermNode
 // can be implemented using a binary tree
 struct ExpressionNode : ASTNode{
+    int line = 0, col = 0;
     std::unique_ptr<struct TermNode> left;
     TokenType op;
     std::unique_ptr<struct TermNode> right;
