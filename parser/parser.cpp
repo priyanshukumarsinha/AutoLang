@@ -61,7 +61,7 @@ std::unique_ptr<VarDeclNode> Parser::parseVarDecl(){
     decl->identifier = name;
     decl->type = type;
     decl->line = nameLine;
-    decl->line = nameCol;
+    decl->col = nameCol;
 
     return decl;
 }

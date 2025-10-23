@@ -146,7 +146,7 @@ Token Lexer::getNextToken(){
     switch(ch){
         case '{': advance(); return Token(TokenType::LCURLYBRACE, std::string(1,ch), line, startCol);
         case '}': advance(); return Token(TokenType::RCURLYBRACE, std::string(1,ch), line, startCol);
-        case '(': advance(); return Token(TokenType::LPARABRACE, std::string(1,ch), line, col);
+        case '(': advance(); return Token(TokenType::LPARABRACE, std::string(1,ch), line, startCol);
         case ')': advance(); return Token(TokenType::RPARABRACE, std::string(1,ch), line, startCol);
         case ';': advance(); return Token(TokenType::SEMICOLON, std::string(1,ch), line, startCol);
         case '>': advance(); return Token(TokenType::SYM_GREATER, std::string(1,ch), line, startCol);
