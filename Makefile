@@ -19,7 +19,7 @@ TARGET = $(BUILD_DIR)/autolangparser
 
 CXX := g++
 CXXFLAGS := -I. -Wall -Werror -std=c++17
-CXXFLAGS := -I. -std=c++17
+# CXXFLAGS := -I. -std=c++17
 
 all: $(TARGET)
 

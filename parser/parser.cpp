@@ -74,6 +74,7 @@ const std::unordered_set<TokenType> literalTypes = {
 
 std::unique_ptr<FactorNode> Parser::parseFactor(){
     // could be IDENTIFIER | literal | "(" expression ")" 
+    // std::cout << currentToken.lexeme << " " << tokenTypeToString(currentToken.type) << "\n"; 
     if(currentToken.type == TokenType::IDENTIFIER){
         auto node = std::make_unique<IdentifierNode> ();
         node->identifier = currentToken.lexeme;
@@ -116,6 +117,7 @@ std::unique_ptr<TermNode> Parser::parseTerm(){
 
 std::unique_ptr<ExpressionNode> Parser::parseExpression(){
     // first we get left term
+    // std::cout << currentToken.lexeme << std::endl;
     auto leftTerm = parseTerm();
     if(!leftTerm){
         // recover gracefully: create an empty expression (or return nullptr)
@@ -130,7 +132,7 @@ std::unique_ptr<ExpressionNode> Parser::parseExpression(){
 
     // while we have + or -
     while(currentToken.type == TokenType::SYM_PLUS || currentToken.type == TokenType::SYM_MINUS){
-        TokenType op = currentToken.type;
+        op = currentToken.type;
         // int opLine = currentToken.line;
         // int opCol  = currentToken.col;
 
@@ -151,6 +153,9 @@ std::unique_ptr<ExpressionNode> Parser::parseExpression(){
         auto newExpr = std::make_unique<ExpressionNode>();
         // left of newExpr is a TermNode that wraps the previous expression
         // i.e expression processed till now
+
+        // This makes it a lot messy 
+        // TODO: improve this in the next project
         auto wrapperFactor  = std::make_unique<ParenExpressionNode> ();
         wrapperFactor->expression = std::move(expr);
 

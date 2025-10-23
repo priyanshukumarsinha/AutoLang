@@ -54,32 +54,35 @@ int main(int argc, char* argv[]) {
             std::cerr << "Error: " << e.what() << "\n";
         }
     } 
+    else if (flag == "-t"){
+        // Beginning Syntax Checks...
+        try{
+            Lexer lexer (input);
+            Parser parser(lexer);
+            auto program = parser.parseProgram();
+            TypeChecker t;
+            if(t.checkProgram(program.get())){
+                // True: means no semantic errors occured
+                std::cout << "\nSemantic Test Passed!\n";
+            }
+            else{
+                std::cerr << "Semantic Errors occured!\n";
+                for(const auto& err: t.getErrors()){
+                    std::cout << err << "\n";
+                }
+            }
+        
+        }
+        catch (const std::exception& e) {
+            std::cerr << "Error: " << e.what() << "\n";
+        }
+    }
     else {
         std::cerr << "ERROR :: Invalid option. Use -s for symbol table or -p for parse tree.\n";
         return 1;
     }
 
-    // Beginning Syntax Checks...
-    try{
-        Lexer lexer (input);
-        Parser parser(lexer);
-        auto program = parser.parseProgram().get();
-        TypeChecker t;
-        if(t.checkProgram(program)){
-            // True: means no semantic errors occured
-            std::cout << "\nSemantic Test Passed!\n";
-        }
-        else{
-            std::cerr << "Semantic Errors occured!\n";
-            for(const auto& err: t.getErrors()){
-                std::cout << err << "\n";
-            }
-        }
-     
-    }
-    catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << "\n";
-    }
+    
 
     return 0;
 }

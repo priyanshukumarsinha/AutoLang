@@ -1,10 +1,11 @@
 control speedControl {
     float speed;
-    set speed (5-10);
-    if (speed > 40.0) {
-        set speed (speed - 5.0 + 3 + 4);
-        if(speed == 40.0){
-            set speed 30;
-        }
-    }
+    # float speed; # variable speed already declared in this scope
+    set speed 5-10;
+    #if (speed > 40.0) {
+    #    set speed (speed - 5.0 + 3 + 4);
+    #    if(speed == 40.0){
+    #        set speed 30;
+    #    }
+    #}
 }
