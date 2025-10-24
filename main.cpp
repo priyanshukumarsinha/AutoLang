@@ -60,17 +60,17 @@ int main(int argc, char* argv[]) {
             Lexer lexer (input);
             Parser parser(lexer);
             auto program = parser.parseProgram();
-            TypeChecker t;
-            if(t.checkProgram(program.get())){
-                // True: means no semantic errors occured
-                std::cout << "\nSemantic Test Passed!\n";
-            }
-            else{
-                std::cerr << "Semantic Errors occured!\n";
-                for(const auto& err: t.getErrors()){
-                    std::cout << err << "\n";
-                }
-            }
+            // TypeChecker t;
+            // if(t.checkProgram(program.get())){
+            //     // True: means no semantic errors occured
+            //     std::cout << "\nSemantic Test Passed!\n";
+            // }
+            // else{
+            //     std::cerr << "Semantic Errors occured!\n";
+            //     for(const auto& err: t.getErrors()){
+            //         std::cout << err << "\n";
+            //     }
+            // }
         
         }
         catch (const std::exception& e) {
